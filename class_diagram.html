@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Industrial Waste Exchange – UML Class Diagram</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --accent3: #ff6b6b;
+      --text: #e8eaf0;
+      --text-muted: #8b92a8;
+      --border: #2d3250;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a1d27 0%, #22263a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 40px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .header-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0;
+    }
+    header h1 { font-size: 1.65rem; font-weight: 700; color: #fff; }
+    header p  { font-size: 0.85rem; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── Legend bar ── */
+    .legend-bar {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      padding: 14px 40px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.78rem; color: var(--text-muted);
+    }
+    .legend-dot {
+      width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; gap: 4px;
+      padding: 16px 40px 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 9px 20px; border-radius: 8px 8px 0 0;
+      cursor: pointer; font-size: 0.85rem; font-weight: 500;
+      border: 1px solid transparent; border-bottom: none;
+      transition: all .2s; color: var(--text-muted);
+      background: transparent;
+    }
+    .tab.active {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .tab:hover:not(.active) { color: var(--text); }
+
+    /* ── Tab panels ── */
+    .panel { display: none; padding: 32px 40px; }
+    .panel.active { display: block; }
+
+    /* ── Diagram wrapper ── */
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      overflow-x: auto;
+    }
+    .diagram-wrap .mermaid svg {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    /* ── Grid ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-badge {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: .05em;
+      padding: 2px 8px; border-radius: 20px; text-transform: uppercase;
+    }
+    .badge-abstract  { background: #3d2970; color: #c4a5ff; }
+    .badge-entity    { background: #1a3a55; color: #66c6ff; }
+    .badge-vo        { background: #1e3b2e; color: #52e5a0; }
+    .badge-enum      { background: #3a2a14; color: #ffc266; }
+    .badge-interface { background: #3a1a2a; color: #ff94b0; }
+
+    .card-title { font-size: 1rem; font-weight: 600; color: #fff; }
+    .card-desc  { font-size: 0.78rem; color: var(--text-muted); padding: 10px 18px 6px; }
+    .card-body  { padding: 6px 18px 16px; }
+
+    .section-label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text-muted);
+      margin: 10px 0 5px;
+    }
+    .attr-list, .method-list { list-style: none; }
+    .attr-list li, .method-list li {
+      font-size: 0.79rem; color: var(--text);
+      padding: 3px 0; border-bottom: 1px solid #22263a;
+      display: flex; align-items: baseline; gap: 6px;
+    }
+    .attr-list li:last-child, .method-list li:last-child { border: none; }
+    .token-type  { color: var(--accent2); font-family: monospace; font-size: .76rem; }
+    .token-name  { color: #c8d0e8; font-family: monospace; }
+    .token-ret   { color: #ffa07a; font-family: monospace; font-size: .76rem; }
+
+    /* ── Enum value pills ── */
+    .enum-vals { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 18px 14px; }
+    .pill {
+      font-size: 0.74rem; padding: 3px 10px; border-radius: 20px;
+      background: var(--surface2); color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Relationships table ── */
+    .rel-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .rel-table th {
+      text-align: left; padding: 8px 14px;
+      background: var(--surface2); color: var(--text-muted);
+      font-size: 0.74rem; text-transform: uppercase; letter-spacing: .06em;
+    }
+    .rel-table td {
+      padding: 9px 14px; border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    .rel-table tr:last-child td { border: none; }
+    .rel-table tr:hover td { background: var(--surface2); }
+    .cardinality {
+      font-family: monospace; font-size: .82rem;
+      color: var(--accent2); font-weight: 700;
+    }
+    .rel-type {
+      font-size: .72rem; padding: 2px 8px; border-radius: 20px;
+      background: var(--surface2);
+    }
+    .rt-inherit    { color: #c4a5ff; }
+    .rt-assoc      { color: #66c6ff; }
+    .rt-compose    { color: #52e5a0; }
+    .rt-dep        { color: #ffa07a; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-icon">♻️</div>
+  <div>
+    <h1>Industrial Waste Exchange — Domain Model</h1>
+    <p>UML Class Diagram · Clean Architecture </p>
+  </div>
+</header>
+
+<!-- Legend -->
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot" style="background:#6c63ff"></div> Abstract / Base</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> Entity</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div> Value Object</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f39c12"></div> Enumeration</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div> Interface (Domain Port)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2d3250"></div> --|&gt; Inheritance</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2d3250; border: 1px solid #555"></div> --  Association</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2d3250; border: 1px dashed #555"></div> *-- Composition</div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('full')">📊 Full Diagram</div>
+  <div class="tab" onclick="showTab('core')">🏗️ Core Diagram</div>
+  <div class="tab" onclick="showTab('catalog')">📋 Class Catalog</div>
+  <div class="tab" onclick="showTab('rels')">🔗 Relationships</div>
+</div>
+
+<!-- ═══════════════════════════════ TAB: FULL DIAGRAM ═══════════════════════════════ -->
+<div class="panel active" id="tab-full">
+  <div class="diagram-wrap">
+    <div class="mermaid">
+%%{init: {'theme':'dark','themeVariables':{'primaryColor':'#22263a','primaryTextColor':'#e8eaf0','primaryBorderColor':'#6c63ff','lineColor':'#6c63ff','secondaryColor':'#1a1d27','tertiaryColor':'#0f1117','fontSize':'12px'}}}%%
+classDiagram
+    direction TB
+
+    %% ── Abstract Base ──────────────────────────────────────
+    class BaseAuditableEntity {
+        &lt;&lt;abstract&gt;&gt;
+        +Id : Guid
+        +CreatedAt : DateTime
+        +UpdatedAt : DateTime
+        +CreatedBy : Guid
+        +UpdatedBy : Guid
+    }
+
+    %% ── Value Object ───────────────────────────────────────
+    class GeoLocation {
+        &lt;&lt;value object&gt;&gt;
+        +Latitude : Double
+        +Longitude : Double
+    }
+
+    %% ── Enumerations ───────────────────────────────────────
+    class UserRole {
+        &lt;&lt;enumeration&gt;&gt;
+        User
+        Admin
+    }
+    class VerificationStatus {
+        &lt;&lt;enumeration&gt;&gt;
+        Pending
+        Approved
+        Rejected
+    }
+    class ListingStatus {
+        &lt;&lt;enumeration&gt;&gt;
+        Available
+        Sold
+        Draft
+    }
+    class EscrowStatus {
+        &lt;&lt;enumeration&gt;&gt;
+        AwaitingDeposit
+        FundsLocked
+        InTransit
+        InspectionPeriod
+        FundsReleased
+        Disputed
+    }
+    class DisputeStatus {
+        &lt;&lt;enumeration&gt;&gt;
+        Open
+        UnderInvestigation
+        Resolved
+    }
+    class NotificationType {
+        &lt;&lt;enumeration&gt;&gt;
+        MatchFound
+        MessageReceived
+        TransactionUpdate
+        SystemAlert
+    }
+
+    %% ── Interfaces ─────────────────────────────────────────
+    class ISemanticMatchmaker {
+        &lt;&lt;interface&gt;&gt;
+        +CalculateCompatibility(offerDesc, reqDesc) Double
+        +StandardizeMaterialName(rawInput) String
+    }
+    class IGeospatialAnalyzer {
+        &lt;&lt;interface&gt;&gt;
+        +CalculateDistance(locationA, locationB) Double
+        +FindEntitiesWithinRadius(center, radiusKm) List~Guid~
+    }
+    class IDynamicPricingAgent {
+        &lt;&lt;interface&gt;&gt;
+        +SuggestPriceRange(materialType, qualityFactor) Tuple~Decimal~
+    }
+    class IVisualInspectionAgent {
+        &lt;&lt;interface&gt;&gt;
+        +AnalyzeImageConsistency(imageStream, claimedMat) Boolean
+    }
+    class IEscrowGateway {
+        &lt;&lt;interface&gt;&gt;
+        +HoldFunds(transactionId, amount) Task~Boolean~
+        +ReleaseFunds(transactionId) Task~Boolean~
+    }
+
+    %% ── Entities ───────────────────────────────────────────
+    class AppUser {
+        &lt;&lt;entity&gt;&gt;
+        +Email : String
+        +PasswordHash : String
+        +Role : UserRole
+        +IsActive : Boolean
+        +DeactivateAccount() Void
+        +UpdatePassword(newHash) Void
+    }
+    class Company {
+        &lt;&lt;entity&gt;&gt;
+        +UserId : Guid
+        +Name : String
+        +Sector : String
+        +Address : String
+        +Location : GeoLocation
+        +IsVerified : Boolean
+        +UpdateLocation(newLocation) Void
+        +MarkAsVerified() Void
+    }
+    class VerificationRequest {
+        &lt;&lt;entity&gt;&gt;
+        +CompanyId : Guid
+        +DocumentUrls : List~String~
+        +Status : VerificationStatus
+        +ReviewedByAdminId : Guid?
+        +Approve(adminId) Void
+        +Reject(adminId, reason) Void
+    }
+    class WasteListing {
+        &lt;&lt;entity&gt;&gt;
+        +SellerId : Guid
+        +MaterialType : String
+        +Quantity : Double
+        +Description : String
+        +ImageUrls : List~String~
+        +Status : ListingStatus
+        +SuggestedPrice : Decimal
+        +AIStandardizedTag : String
+        +IsVisuallyValidated : Boolean
+        +ApplyAITags(tag) Void
+        +MarkAsSold() Void
+    }
+    class MaterialRequest {
+        &lt;&lt;entity&gt;&gt;
+        +BuyerId : Guid
+        +MaterialType : String
+        +TargetQuantity : Double
+        +LocationPreferenceRadiusKm : Double
+        +UpdateRequirements(quantity, radius) Void
+    }
+    class ResourceMatch {
+        &lt;&lt;entity&gt;&gt;
+        +ListingId : Guid
+        +RequestId : Guid
+        +SemanticCompatibilityScore : Double
+        +DistanceKm : Double
+        +IsViableMatch(threshold) Boolean
+    }
+    class Transaction {
+        &lt;&lt;entity&gt;&gt;
+        +ListingId : Guid
+        +BuyerId : Guid
+        +SellerId : Guid
+        +AgreedPrice : Decimal
+        +EscrowState : EscrowStatus
+        +IsSampleRequest : Boolean
+        +LockFunds() Void
+        +ConfirmDelivery() Void
+        +ReleaseFunds() Void
+    }
+    class DisputeTicket {
+        &lt;&lt;entity&gt;&gt;
+        +TransactionId : Guid
+        +RaisedByUserId : Guid
+        +Reason : String
+        +Status : DisputeStatus
+        +AdminResolutionRemarks : String
+        +Resolve(remarks) Void
+    }
+    class Message {
+        &lt;&lt;entity&gt;&gt;
+        +SenderId : Guid
+        +ReceiverId : Guid
+        +Content : String
+        +IsRead : Boolean
+    }
+    class Notification {
+        &lt;&lt;entity&gt;&gt;
+        +UserId : Guid
+        +Content : String
+        +Type : NotificationType
+        +IsRead : Boolean
+    }
+
+    %% ── Inheritance from BaseAuditableEntity ───────────────
+    AppUser            --|> BaseAuditableEntity
+    Company            --|> BaseAuditableEntity
+    VerificationRequest --|> BaseAuditableEntity
+    WasteListing       --|> BaseAuditableEntity
+    MaterialRequest    --|> BaseAuditableEntity
+    ResourceMatch      --|> BaseAuditableEntity
+    Transaction        --|> BaseAuditableEntity
+    DisputeTicket      --|> BaseAuditableEntity
+    Message            --|> BaseAuditableEntity
+    Notification       --|> BaseAuditableEntity
+
+    %% ── Core Associations ──────────────────────────────────
+    AppUser            "1" --  "1"  Company              : owns
+    Company            "1" --  "*"  WasteListing         : posts
+    Company            "1" --  "*"  MaterialRequest      : creates
+    Company            "1" --  "*"  VerificationRequest  : submits
+    WasteListing       "1" --  "*"  ResourceMatch        : matched in
+    MaterialRequest    "1" --  "*"  ResourceMatch        : matched in
+    WasteListing       "1" --  "0..1" Transaction        : leads to
+    Transaction        "1" --  "0..1" DisputeTicket      : may raise
+
+    %% ── Compositions (GeoLocation) ─────────────────────────
+    Company               *-- GeoLocation : Location
+
+    %% ── Enum Dependencies ──────────────────────────────────
+    AppUser            ..> UserRole
+    VerificationRequest ..> VerificationStatus
+    WasteListing       ..> ListingStatus
+    Transaction        ..> EscrowStatus
+    DisputeTicket      ..> DisputeStatus
+    Notification       ..> NotificationType
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ TAB: CORE DIAGRAM ═══════════════════════════════ -->
+<div class="panel" id="tab-core">
+  <div class="diagram-wrap">
+    <div class="mermaid">
+%%{init: {'theme':'dark','themeVariables':{'primaryColor':'#22263a','primaryTextColor':'#e8eaf0','primaryBorderColor':'#6c63ff','lineColor':'#6c63ff','secondaryColor':'#1a1d27','fontSize':'14px'}}}%%
+classDiagram
+    direction LR
+
+    class BaseAuditableEntity {
+        &lt;&lt;abstract&gt;&gt;
+        +Id : Guid
+        +CreatedAt : DateTime
+        +UpdatedAt : DateTime
+    }
+    class GeoLocation {
+        &lt;&lt;value object&gt;&gt;
+        +Latitude : Double
+        +Longitude : Double
+    }
+    class AppUser {
+        &lt;&lt;entity&gt;&gt;
+        +Email : String
+        +Role : UserRole
+        +DeactivateAccount()
+        +UpdatePassword(h)
+    }
+    class Company {
+        &lt;&lt;entity&gt;&gt;
+        +Name : String
+        +Location : GeoLocation
+        +IsVerified : Boolean
+        +MarkAsVerified()
+    }
+    class WasteListing {
+        &lt;&lt;entity&gt;&gt;
+        +MaterialType : String
+        +Quantity : Double
+        +Status : ListingStatus
+        +MarkAsSold()
+    }
+    class MaterialRequest {
+        &lt;&lt;entity&gt;&gt;
+        +MaterialType : String
+        +TargetQuantity : Double
+        +UpdateRequirements()
+    }
+    class ResourceMatch {
+        &lt;&lt;entity&gt;&gt;
+        +SemanticCompatibilityScore : Double
+        +DistanceKm : Double
+        +IsViableMatch(t)
+    }
+    class Transaction {
+        &lt;&lt;entity&gt;&gt;
+        +AgreedPrice : Decimal
+        +EscrowState : EscrowStatus
+        +LockFunds()
+        +ReleaseFunds()
+    }
+    class DisputeTicket {
+        &lt;&lt;entity&gt;&gt;
+        +Reason : String
+        +Status : DisputeStatus
+        +Resolve(remarks)
+    }
+    class VerificationRequest {
+        &lt;&lt;entity&gt;&gt;
+        +Status : VerificationStatus
+        +Approve(adminId)
+        +Reject(adminId, reason)
+    }
+
+    AppUser --|> BaseAuditableEntity
+    Company --|> BaseAuditableEntity
+    WasteListing --|> BaseAuditableEntity
+    MaterialRequest --|> BaseAuditableEntity
+    ResourceMatch --|> BaseAuditableEntity
+    Transaction --|> BaseAuditableEntity
+    DisputeTicket --|> BaseAuditableEntity
+    VerificationRequest --|> BaseAuditableEntity
+
+    AppUser "1" -- "1" Company
+    Company "1" -- "*" WasteListing
+    Company "1" -- "*" MaterialRequest
+    Company "1" -- "*" VerificationRequest
+    WasteListing "1" -- "*" ResourceMatch
+    MaterialRequest "1" -- "*" ResourceMatch
+    WasteListing "1" -- "0..1" Transaction
+    Transaction "1" -- "0..1" DisputeTicket
+    Company *-- GeoLocation
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ TAB: CATALOG ═══════════════════════════════ -->
+<div class="panel" id="tab-catalog">
+  <div class="grid">
+
+    <!-- BaseAuditableEntity -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-abstract">Abstract</span>
+        <span class="card-title">BaseAuditableEntity</span>
+      </div>
+      <div class="card-desc">Provides standard tracking (audit trail) for all database entities.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">Id</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">CreatedAt</span><span class="token-type">: DateTime</span></li>
+          <li><span class="token-name">UpdatedAt</span><span class="token-type">: DateTime</span></li>
+          <li><span class="token-name">CreatedBy</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">UpdatedBy</span><span class="token-type">: Guid</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- GeoLocation -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-vo">Value Object</span>
+        <span class="card-title">GeoLocation</span>
+      </div>
+      <div class="card-desc">Holds geospatial data without coupling Domain to NetTopologySuite.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">Latitude</span><span class="token-type">: Double</span></li>
+          <li><span class="token-name">Longitude</span><span class="token-type">: Double</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- AppUser -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">AppUser</span>
+      </div>
+      <div class="card-desc">Root identity for authentication &amp; authorisation.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">Email</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">PasswordHash</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">Role</span><span class="token-type">: UserRole</span></li>
+          <li><span class="token-name">IsActive</span><span class="token-type">: Boolean</span></li>
+        </ul>
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">DeactivateAccount()</span><span class="token-ret">: Void</span></li>
+          <li><span class="token-name">UpdatePassword(newHash)</span><span class="token-ret">: Void</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Company -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">Company</span>
+      </div>
+      <div class="card-desc">Represents a verified factory — Buyer or Seller.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">UserId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">Name</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">Sector</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">Address</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">Location</span><span class="token-type">: GeoLocation</span></li>
+          <li><span class="token-name">IsVerified</span><span class="token-type">: Boolean</span></li>
+        </ul>
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">UpdateLocation(newLocation)</span><span class="token-ret">: Void</span></li>
+          <li><span class="token-name">MarkAsVerified()</span><span class="token-ret">: Void</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- VerificationRequest -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">VerificationRequest</span>
+      </div>
+      <div class="card-desc">Workflow for verifying factory documents.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">CompanyId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">DocumentUrls</span><span class="token-type">: List&lt;String&gt;</span></li>
+          <li><span class="token-name">Status</span><span class="token-type">: VerificationStatus</span></li>
+          <li><span class="token-name">ReviewedByAdminId</span><span class="token-type">: Guid?</span></li>
+        </ul>
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">Approve(adminId)</span><span class="token-ret">: Void</span></li>
+          <li><span class="token-name">Reject(adminId, reason)</span><span class="token-ret">: Void</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- WasteListing -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">WasteListing</span>
+      </div>
+      <div class="card-desc">Industrial by-product offered by a Seller.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">SellerId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">MaterialType</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">Quantity</span><span class="token-type">: Double</span></li>
+          <li><span class="token-name">Description</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">ImageUrls</span><span class="token-type">: List&lt;String&gt;</span></li>
+          <li><span class="token-name">Status</span><span class="token-type">: ListingStatus</span></li>
+          <li><span class="token-name">SuggestedPrice</span><span class="token-type">: Decimal</span></li>
+          <li><span class="token-name">AIStandardizedTag</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">IsVisuallyValidated</span><span class="token-type">: Boolean</span></li>
+        </ul>
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">ApplyAITags(tag)</span><span class="token-ret">: Void</span></li>
+          <li><span class="token-name">MarkAsSold()</span><span class="token-ret">: Void</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- MaterialRequest -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">MaterialRequest</span>
+      </div>
+      <div class="card-desc">Specific material a Buyer needs.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">BuyerId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">MaterialType</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">TargetQuantity</span><span class="token-type">: Double</span></li>
+          <li><span class="token-name">LocationPreferenceRadiusKm</span><span class="token-type">: Double</span></li>
+        </ul>
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">UpdateRequirements(qty, radius)</span><span class="token-ret">: Void</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ResourceMatch -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">ResourceMatch</span>
+      </div>
+      <div class="card-desc">Bridging entity generated by the Semantic Matchmaker.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">ListingId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">RequestId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">SemanticCompatibilityScore</span><span class="token-type">: Double</span></li>
+          <li><span class="token-name">DistanceKm</span><span class="token-type">: Double</span></li>
+        </ul>
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">IsViableMatch(threshold)</span><span class="token-ret">: Boolean</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Transaction -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">Transaction</span>
+      </div>
+      <div class="card-desc">Escrow contract managing the exchange.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">ListingId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">BuyerId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">SellerId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">AgreedPrice</span><span class="token-type">: Decimal</span></li>
+          <li><span class="token-name">EscrowState</span><span class="token-type">: EscrowStatus</span></li>
+          <li><span class="token-name">IsSampleRequest</span><span class="token-type">: Boolean</span></li>
+        </ul>
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">LockFunds()</span><span class="token-ret">: Void</span></li>
+          <li><span class="token-name">ConfirmDelivery()</span><span class="token-ret">: Void</span></li>
+          <li><span class="token-name">ReleaseFunds()</span><span class="token-ret">: Void</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DisputeTicket -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">DisputeTicket</span>
+      </div>
+      <div class="card-desc">Handles inspection failures or buyer/seller conflicts.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">TransactionId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">RaisedByUserId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">Reason</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">Status</span><span class="token-type">: DisputeStatus</span></li>
+          <li><span class="token-name">AdminResolutionRemarks</span><span class="token-type">: String?</span></li>
+        </ul>
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">Resolve(remarks)</span><span class="token-ret">: Void</span></li>
+        </ul>
+      </div>
+    </div>
+
+
+
+    <!-- Message -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">Message</span>
+      </div>
+      <div class="card-desc">B2B communication between users.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">SenderId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">ReceiverId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">Content</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">IsRead</span><span class="token-type">: Boolean</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-entity">Entity</span>
+        <span class="card-title">Notification</span>
+      </div>
+      <div class="card-desc">System alerts delivered to users.</div>
+      <div class="card-body">
+        <div class="section-label">Attributes</div>
+        <ul class="attr-list">
+          <li><span class="token-name">UserId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">Content</span><span class="token-type">: String</span></li>
+          <li><span class="token-name">Type</span><span class="token-type">: NotificationType</span></li>
+          <li><span class="token-name">IsRead</span><span class="token-type">: Boolean</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── Enumerations ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-enum">Enum</span>
+        <span class="card-title">UserRole</span>
+      </div>
+      <div class="enum-vals">
+        <span class="pill">User</span><span class="pill">Admin</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-enum">Enum</span>
+        <span class="card-title">VerificationStatus</span>
+      </div>
+      <div class="enum-vals">
+        <span class="pill">Pending</span><span class="pill">Approved</span><span class="pill">Rejected</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-enum">Enum</span>
+        <span class="card-title">ListingStatus</span>
+      </div>
+      <div class="enum-vals">
+        <span class="pill">Available</span><span class="pill">Sold</span><span class="pill">Draft</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-enum">Enum</span>
+        <span class="card-title">EscrowStatus</span>
+      </div>
+      <div class="enum-vals">
+        <span class="pill">AwaitingDeposit</span><span class="pill">FundsLocked</span>
+        <span class="pill">InTransit</span><span class="pill">InspectionPeriod</span>
+        <span class="pill">FundsReleased</span><span class="pill">Disputed</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-enum">Enum</span>
+        <span class="card-title">DisputeStatus</span>
+      </div>
+      <div class="enum-vals">
+        <span class="pill">Open</span><span class="pill">UnderInvestigation</span><span class="pill">Resolved</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-enum">Enum</span>
+        <span class="card-title">NotificationType</span>
+      </div>
+      <div class="enum-vals">
+        <span class="pill">MatchFound</span><span class="pill">MessageReceived</span>
+        <span class="pill">TransactionUpdate</span><span class="pill">SystemAlert</span>
+      </div>
+    </div>
+
+    <!-- ── Interfaces ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-interface">Interface</span>
+        <span class="card-title">ISemanticMatchmaker</span>
+      </div>
+      <div class="card-desc">Semantic Kernel / Ollama — Strategy Pattern port.</div>
+      <div class="card-body">
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">CalculateCompatibility(offer, req)</span><span class="token-ret">: Double</span></li>
+          <li><span class="token-name">StandardizeMaterialName(raw)</span><span class="token-ret">: String</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-interface">Interface</span>
+        <span class="card-title">IGeospatialAnalyzer</span>
+      </div>
+      <div class="card-desc">NetTopologySuite implementation port.</div>
+      <div class="card-body">
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">CalculateDistance(A, B)</span><span class="token-ret">: Double</span></li>
+          <li><span class="token-name">FindEntitiesWithinRadius(c, r)</span><span class="token-ret">: List&lt;Guid&gt;</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-interface">Interface</span>
+        <span class="card-title">IDynamicPricingAgent</span>
+      </div>
+      <div class="card-desc">AI agent for dynamic price suggestion.</div>
+      <div class="card-body">
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">SuggestPriceRange(mat, quality)</span><span class="token-ret">: Tuple&lt;Dec,Dec,Dec&gt;</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-interface">Interface</span>
+        <span class="card-title">IVisualInspectionAgent</span>
+      </div>
+      <div class="card-desc">AI vision port for image-material consistency checks.</div>
+      <div class="card-body">
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">AnalyzeImageConsistency(img, mat)</span><span class="token-ret">: Boolean</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-badge badge-interface">Interface</span>
+        <span class="card-title">IEscrowGateway</span>
+      </div>
+      <div class="card-desc">Payment gateway port (escrow management).</div>
+      <div class="card-body">
+        <div class="section-label">Methods</div>
+        <ul class="method-list">
+          <li><span class="token-name">HoldFunds(txId, amount)</span><span class="token-ret">: Task&lt;Boolean&gt;</span></li>
+          <li><span class="token-name">ReleaseFunds(txId)</span><span class="token-ret">: Task&lt;Boolean&gt;</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+</div>
+
+<!-- ═══════════════════════════════ TAB: RELATIONSHIPS ═══════════════════════════════ -->
+<div class="panel" id="tab-rels">
+  <div class="card" style="overflow:auto">
+    <table class="rel-table">
+      <thead>
+        <tr>
+          <th>From</th>
+          <th>Relationship</th>
+          <th>To</th>
+          <th>Cardinality</th>
+          <th>Type</th>
+          <th>Label</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>AppUser</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>Company</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>WasteListing</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>MaterialRequest</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>ResourceMatch</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>Transaction</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>DisputeTicket</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>VerificationRequest</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>Message</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>Notification</td><td class="rel-type rt-inherit">Inheritance --|&gt;</td><td>BaseAuditableEntity</td><td>—</td><td>Generalization</td><td>extends</td></tr>
+        <tr><td>AppUser</td><td class="rel-type rt-assoc">Association --</td><td>Company</td><td class="cardinality">1 → 1</td><td>Association</td><td>owns</td></tr>
+        <tr><td>Company</td><td class="rel-type rt-assoc">Association --</td><td>WasteListing</td><td class="cardinality">1 → *</td><td>Association</td><td>posts</td></tr>
+        <tr><td>Company</td><td class="rel-type rt-assoc">Association --</td><td>MaterialRequest</td><td class="cardinality">1 → *</td><td>Association</td><td>creates</td></tr>
+        <tr><td>Company</td><td class="rel-type rt-assoc">Association --</td><td>VerificationRequest</td><td class="cardinality">1 → *</td><td>Association</td><td>submits</td></tr>
+        <tr><td>WasteListing</td><td class="rel-type rt-assoc">Association --</td><td>ResourceMatch</td><td class="cardinality">1 → *</td><td>Association</td><td>matched in</td></tr>
+        <tr><td>MaterialRequest</td><td class="rel-type rt-assoc">Association --</td><td>ResourceMatch</td><td class="cardinality">1 → *</td><td>Association</td><td>matched in</td></tr>
+        <tr><td>WasteListing</td><td class="rel-type rt-assoc">Association --</td><td>Transaction</td><td class="cardinality">1 → 0..1</td><td>Association</td><td>leads to</td></tr>
+        <tr><td>Transaction</td><td class="rel-type rt-assoc">Association --</td><td>DisputeTicket</td><td class="cardinality">1 → 0..1</td><td>Association</td><td>may raise</td></tr>
+        <tr><td>Company</td><td class="rel-type rt-compose">Composition *--</td><td>GeoLocation</td><td class="cardinality">1 → 1</td><td>Composition</td><td>Location</td></tr>
+        <tr><td>AppUser</td><td class="rel-type rt-dep">Dependency ..&gt;</td><td>UserRole</td><td>—</td><td>Dependency</td><td>uses enum</td></tr>
+        <tr><td>VerificationRequest</td><td class="rel-type rt-dep">Dependency ..&gt;</td><td>VerificationStatus</td><td>—</td><td>Dependency</td><td>uses enum</td></tr>
+        <tr><td>WasteListing</td><td class="rel-type rt-dep">Dependency ..&gt;</td><td>ListingStatus</td><td>—</td><td>Dependency</td><td>uses enum</td></tr>
+        <tr><td>Transaction</td><td class="rel-type rt-dep">Dependency ..&gt;</td><td>EscrowStatus</td><td>—</td><td>Dependency</td><td>uses enum</td></tr>
+        <tr><td>DisputeTicket</td><td class="rel-type rt-dep">Dependency ..&gt;</td><td>DisputeStatus</td><td>—</td><td>Dependency</td><td>uses enum</td></tr>
+        <tr><td>Notification</td><td class="rel-type rt-dep">Dependency ..&gt;</td><td>NotificationType</td><td>—</td><td>Dependency</td><td>uses enum</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // Tab switching
+  function showTab(id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // Initialise Mermaid
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    securityLevel: 'loose',
+    classDiagram: {
+      useMaxWidth: true,
+      nodeSpacing: 100,    // reasonable spacing
+      rankSpacing: 80,     // vertical spacing
+      padding: 20
+    },
+    flowchart: {
+      nodeSpacing: 100,
+      rankSpacing: 80,
+      padding: 20
+    }
+  });
+</script>
+</body>
+</html>
