@@ -332,7 +332,7 @@ classDiagram
     }
     class WasteListing {
         &lt;&lt;entity&gt;&gt;
-        +SellerId : Guid
+        +UserId : Guid
         +MaterialType : String
         +Quantity : Double
         +Description : String
@@ -363,8 +363,7 @@ classDiagram
     class Transaction {
         &lt;&lt;entity&gt;&gt;
         +ListingId : Guid
-        +BuyerId : Guid
-        +SellerId : Guid
+        +UserId : Guid
         +AgreedPrice : Decimal
         +EscrowState : EscrowStatus
         +IsSampleRequest : Boolean
@@ -594,7 +593,7 @@ classDiagram
         <span class="card-badge badge-entity">Entity</span>
         <span class="card-title">Company</span>
       </div>
-      <div class="card-desc">Represents a verified factory — Buyer or Seller.</div>
+      <div class="card-desc">Represents a verified factory.</div>
       <div class="card-body">
         <div class="section-label">Attributes</div>
         <ul class="attr-list">
@@ -646,7 +645,7 @@ classDiagram
       <div class="card-body">
         <div class="section-label">Attributes</div>
         <ul class="attr-list">
-          <li><span class="token-name">SellerId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">UserId</span><span class="token-type">: Guid</span></li>
           <li><span class="token-name">MaterialType</span><span class="token-type">: String</span></li>
           <li><span class="token-name">Quantity</span><span class="token-type">: Double</span></li>
           <li><span class="token-name">Description</span><span class="token-type">: String</span></li>
@@ -719,8 +718,7 @@ classDiagram
         <div class="section-label">Attributes</div>
         <ul class="attr-list">
           <li><span class="token-name">ListingId</span><span class="token-type">: Guid</span></li>
-          <li><span class="token-name">BuyerId</span><span class="token-type">: Guid</span></li>
-          <li><span class="token-name">SellerId</span><span class="token-type">: Guid</span></li>
+          <li><span class="token-name">UserId</span><span class="token-type">: Guid</span></li>
           <li><span class="token-name">AgreedPrice</span><span class="token-type">: Decimal</span></li>
           <li><span class="token-name">EscrowState</span><span class="token-type">: EscrowStatus</span></li>
           <li><span class="token-name">IsSampleRequest</span><span class="token-type">: Boolean</span></li>
